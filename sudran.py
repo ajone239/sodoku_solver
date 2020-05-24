@@ -1,6 +1,9 @@
+'''
+Jo's solution
+'''
+import time
 import numpy as np
 from numpy import random
-import time
 
 # Setting up un-solved puzzle
 # '''
