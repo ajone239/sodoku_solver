@@ -29,6 +29,15 @@ class Sudoku:
         ''' prints the current state of the puzzle '''
         for row in self.puzzle:
             print(row)
+    def is_puzzle_valid(self):
+        ''' ensures the stored puzzle is even solvable '''
+        for i in range(0, 9):
+            if not self.is_valid_row(i) or not self.is_valid_col(i):
+                return False
+        for i, j in [(i, j) for i in range(0, 7, 3) for j in range(0, 7, 3)]:
+            if not self.is_valid_blk(i, j):
+                return False
+        return True
     def is_valid(self, row, col):
         ''' is the passed index valid '''
         return self.is_valid_row(row) and self.is_valid_col(col) and self.is_valid_blk(row, col)
@@ -57,11 +66,14 @@ class Sudoku:
         return len(block) == len(set(block))
     def solve(self):
         ''' solves the puzzle stored in the class '''
-        if self.solve_rec(0, 0):
-            print("succes!")
-        else:
+        if sud.is_puzzle_valid():
+            if self.solve_rec(0, 0):
+                print("succes!")
+                self.print()
+                return
             print("failure!")
-        self.print()
+        else:
+            print("Puzzle is invalid!")
     def solve_rec(self, row, col):
         '''
         helper function to the main puzzle solver
@@ -70,33 +82,35 @@ class Sudoku:
         wrong
         '''
         # calc the new rows and column
-        n_col = col + 1
-        n_row = row
-        if n_col >= 9:
-            n_col = n_col % 9
-            n_row = (row + 1) % 9
+        if col >= 9:
+            col = 0
+            row = (row + 1)
         if self.puzzle[row][col] == 0:
             # test all the values for a cell
             for i in range(1, 10):
                 self.puzzle[row][col] = i
                 if self.is_valid(row, col):
+                    # valid choice on the last cell
                     if row == 8 and col == 8:
                         return True
-                    if self.solve_rec(n_row, n_col):
+                    # recurse to the next cell and
+                    # return the success of the call
+                    if self.solve_rec(row, col + 1):
                         return True
             # undo what we have done
             self.puzzle[row][col] = 0
             return False
-        elif row == 8 and col == 8:
+            # if it is a preset digit
+            #and its the last on it is good
+        if row == 8 and col == 8:
             return True
-        else:
-            return self.solve_rec(n_row, n_col)
-
+        # recurse down if is digit
+        return self.solve_rec(row, col + 1)
 
 # main exexution
 if __name__ == '__main__':
     for a in sys.argv[1:]:
         print(a)
-        sud = Sudoku(a)
-        sud.print()
-        sud.solve()
+        sud = Sudoku(a) # init
+        sud.print() # unsolved graph
+        sud.solve() # solved graph
