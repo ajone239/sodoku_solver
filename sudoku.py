@@ -29,9 +29,6 @@ class Sudoku:
         ''' prints the current state of the puzzle '''
         for row in self.puzzle:
             print(row)
-    def solve(self):
-        ''' solves the puzzle stored in the class '''
-
     def is_valid(self, row, col):
         ''' is the passed index valid '''
         return self.is_valid_row(row) and self.is_valid_col(col) and self.is_valid_blk(row, col)
@@ -58,6 +55,43 @@ class Sudoku:
         # take out all the zeros
         block = [val for sub in block for val in sub if val != 0]
         return len(block) == len(set(block))
+    def solve(self):
+        ''' solves the puzzle stored in the class '''
+        if self.solve_rec(0, 0):
+            print("succes!")
+        else:
+            print("failure!")
+        self.print()
+    def solve_rec(self, row, col):
+        '''
+        helper function to the main puzzle solver
+        it operates recursively walking through the
+        puzzle as it solves and walking back when
+        wrong
+        '''
+        # calc the new rows and column
+        n_col = col + 1
+        n_row = row
+        if n_col >= 9:
+            n_col = n_col % 9
+            n_row = (row + 1) % 9
+        if self.puzzle[row][col] == 0:
+            # test all the values for a cell
+            for i in range(1, 10):
+                self.puzzle[row][col] = i
+                if self.is_valid(row, col):
+                    if row == 8 and col == 8:
+                        return True
+                    if self.solve_rec(n_row, n_col):
+                        return True
+            # undo what we have done
+            self.puzzle[row][col] = 0
+            return False
+        elif row == 8 and col == 8:
+            return True
+        else:
+            return self.solve_rec(n_row, n_col)
+
 
 # main exexution
 if __name__ == '__main__':
@@ -65,3 +99,4 @@ if __name__ == '__main__':
         print(a)
         sud = Sudoku(a)
         sud.print()
+        sud.solve()
