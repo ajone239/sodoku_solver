@@ -31,10 +31,13 @@ class Sudoku:
             print(row)
     def is_puzzle_valid(self):
         ''' ensures the stored puzzle is even solvable '''
+        # check all rows and columns
         for i in range(0, 9):
             if not self.is_valid_row(i) or not self.is_valid_col(i):
                 return False
-        for i, j in [(i, j) for i in range(0, 7, 3) for j in range(0, 7, 3)]:
+        # check all the blocks looking at their top right corner
+        blk_edg = range(0, 7, 3)
+        for i, j in [(i, j) for i in blk_edg for j in blk_edg]:
             if not self.is_valid_blk(i, j):
                 return False
         return True
